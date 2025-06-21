@@ -4,13 +4,13 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# only top 5 IATA codes
 CODE_MAP = {
-  "WX": "Weather at {dep} is causing delays.",
-  "MX": "Mechanical issue on inbound aircraft.",
-  "ATC": "Air traffic control restrictions.",
-  "CREW": "Crew scheduling conflict.",
-  "OPS": "Operational delay."
+  "WO": "Weather at {departure} is causing delays.",
+  "WT": "Weather at {arrival} is causing delays.",
+  "WR": "Weather en route is causing delays.",
+  "AT": "Air traffic control restrictions.",
+  "FC": "Crew scheduling conflict.",
+  "FP": "Operational delay."
 }
 
 class Context(BaseModel):
