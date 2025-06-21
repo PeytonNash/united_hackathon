@@ -1,0 +1,6 @@
+# infra/rules/ua_rules.yml
+{% if profile.priority_score >= 0.8 %}
+Offer: upgrade to first class
+{% else %}
+Offer: rebook next available flight
+{% endif %}
