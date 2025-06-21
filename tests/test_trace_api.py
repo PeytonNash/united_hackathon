@@ -5,7 +5,7 @@ client = TestClient(ta.app)
 
 
 def test_trace_write_and_read():
-    payload = {"foo":"bar"}
+    payload = {"foo": "bar"}
     post = client.post("/trace", json={"payload":payload})
     tid = post.json()["trace_id"]
     get = client.get(f"/trace/{tid}")

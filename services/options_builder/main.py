@@ -30,6 +30,7 @@ def build_options(ctx: Ctx):
       LIMIT 5
     """, (dep,))
     flights = [dict(r) for r in cur.fetchall()]
+
     # join hotels & lounges simply
     options = []
     for f in flights:
@@ -39,5 +40,6 @@ def build_options(ctx: Ctx):
         lcur = conn.execute("SELECT * FROM lounges WHERE airport_code = ? LIMIT 1", (f["arr"],))
         lounge = dict(lcur.fetchone() or {})
         options.append({"flight": f, "hotel": hotel, "lounge": lounge})
+
     conn.close()
     return options

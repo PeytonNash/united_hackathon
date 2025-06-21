@@ -13,9 +13,11 @@ CODE_MAP = {
   "FP": "Operational delay."
 }
 
+
 class Context(BaseModel):
     flight_ctx: dict
     docs: list[str]
+
 
 @app.post("/delay_explainer")
 def explain(ctx: Context):

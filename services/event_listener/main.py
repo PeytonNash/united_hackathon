@@ -5,6 +5,7 @@ import os
 app = FastAPI()
 CTX_URL = os.getenv("CTX_AGG_URL", "http://localhost:8001/context/")
 
+
 @app.post("/events")
 async def on_event(req: Request):
     evt = await req.json()
