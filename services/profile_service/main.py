@@ -1,27 +1,33 @@
 from fastapi import FastAPI
-import sqlite3
-import os
+from services.bigquery_client import CLIENT, table_ref
+from google.cloud import bigquery
 
 app = FastAPI()
-DB_PATH = os.getenv("DB_PATH", "acdc.db")
 
-
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-@app.get("/profile/{pax_id}")
-def get_profile(pax_id: str):
-    conn = get_db()
-    cur  = conn.execute("SELECT * FROM profiles WHERE pax_id = ?", (pax_id,))
-    row  = cur.fetchone()
-    profile = dict(row) if row else {}
-    # compute priority
+@app.get("/profile/{customer_id}")
+def get_profile(customer_id: str):
+    q = f"""
+      SELECT c.*, b.flight.iata AS last_flight, COUNT(b.customer_id) AS total_bookings
+      FROM {table_ref('customers')} AS c
+      LEFT JOIN {table_ref('bookings')} AS b
+        ON c.customer_id = b.customer_id
+      WHERE c.customer_id = @customer_id
+      GROUP BY c.customer_id, c.tier_score, c.tags, c.past_CSAT, b.flight.iata
+    """
+    job = CLIENT.query(
+        q,
+        job_config=bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("customer_id","STRING",customer_id)
+            ]
+        )
+    )
+    rec = [dict(row) for row in job.result()]
+    if not rec:
+        return {}
+    profile = rec[0]
+    # compute priority on the fly
     tier = profile.get("tier_score", 0)
-    tags = profile.get("tags", "").split(",")
-    prio = 0.6*tier + 0.4*(1 if "MED_SURGERY" in tags else 0)
-    profile["priority_score"] = prio
-    conn.close()
+    tags = profile.get("tags","").split(",")
+    profile["priority_score"] = 0.6 * tier + 0.4 * (1 if "MED_SURGERY" in tags else 0)
     return profile

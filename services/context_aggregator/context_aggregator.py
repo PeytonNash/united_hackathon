@@ -1,35 +1,45 @@
 from fastapi import FastAPI
-import sqlite3
-import os
+from services.bigquery_client import CLIENT, table_ref
+from google.cloud import bigquery
 
 app = FastAPI()
-DB_PATH = os.getenv("DB_PATH", "acdc.db")
 
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+@app.get("/context/{flight_iata}")
+def get_context(flight_iata: str):
+    # 1) Structured: flight + booking count + empty seats
+    q_flight = f"""
+      SELECT f.*, b.n_party, b.conf_code
+      FROM {table_ref('flights')} AS f
+      LEFT JOIN {table_ref('bookings')} AS b
+        ON f.flight_iata = b.flight.iata
+      WHERE f.flight_iata = @flight_iata
+    """
+    job = CLIENT.query(
+        q_flight,
+        job_config=bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("flight_iata", "STRING", flight_iata)
+            ]
+        )
+    )
+    flight_rec = [dict(row) for row in job.result()]
 
+    # 2) Unstructured: pull top-3 SOP/docs entries if stored in BigQuery
+    q_docs = f"""
+      SELECT content
+      FROM {table_ref('docs')}
+      WHERE REGEXP_CONTAINS(content, @flight_iata)
+      LIMIT 3
+    """
+    docs_job = CLIENT.query(
+        q_docs,
+        job_config=bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("flight_iata", "STRING", flight_iata)
+            ]
+        )
+    )
+    docs = [row.content for row in docs_job]
 
-@app.get("/context/{flight_id}")
-def get_context(flight_id: str):
-    conn = get_db()
-    # structured data
-    cur = conn.execute("""
-      SELECT flight_id, dep, arr, dep_time, arr_time, delay_code, empty_seats
-      FROM flights WHERE flight_id = ?
-    """, (flight_id,))
-    row = cur.fetchone()
-    flight = dict(row) if row else {}
-    # unstructured docs (FTS)
-    docs = []
-    if flight:
-        cur = conn.execute("""
-          SELECT content FROM docs_fts
-          WHERE docs_fts MATCH ?
-          LIMIT 3
-        """, (flight_id,))
-        docs = [r["content"] for r in cur.fetchall()]
-    conn.close()
-    return {"flight_ctx": flight, "docs": docs}
+    return {"flight_ctx": flight_rec[0] if flight_rec else {}, "docs": docs}

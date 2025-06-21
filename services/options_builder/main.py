@@ -1,45 +1,39 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import sqlite3
-import os
+from services.bigquery_client import CLIENT, table_ref
+from google.cloud import bigquery
 
 app = FastAPI()
-DB_PATH = os.getenv("DB_PATH", "acdc.db")
-
 
 class Ctx(BaseModel):
     flight_ctx: dict
 
-
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
 @app.post("/build_options")
 def build_options(ctx: Ctx):
-    dep = ctx.flight_ctx.get("dep")
-    conn = get_db()
-    # find UA & LH flights next 12h
-    cur = conn.execute("""
-      SELECT flight_id, dep_time, arr_time, airline
-      FROM flights
-      WHERE dep = ? AND dep_time BETWEEN datetime('now') AND datetime('now','+12 hours')
-        AND airline IN ('UA','LH')
-      LIMIT 5
-    """, (dep,))
-    flights = [dict(r) for r in cur.fetchall()]
-
-    # join hotels & lounges simply
-    options = []
-    for f in flights:
-        # pick one hotel
-        hcur = conn.execute("SELECT * FROM hotels WHERE airport_code = ? LIMIT 1", (f["arr"],))
-        hotel = dict(hcur.fetchone() or {})
-        lcur = conn.execute("SELECT * FROM lounges WHERE airport_code = ? LIMIT 1", (f["arr"],))
-        lounge = dict(lcur.fetchone() or {})
-        options.append({"flight": f, "hotel": hotel, "lounge": lounge})
-
-    conn.close()
-    return options
+    dep = ctx.flight_ctx["departure_iata"]
+    q = f"""
+      WITH candidate_flights AS (
+        SELECT flight_iata, departure_scheduled, arrival_iata
+        FROM {table_ref('flights')}
+        WHERE departure_iata = @dep
+          AND TIMESTAMP_DIFF(departure_scheduled, CURRENT_TIMESTAMP(), HOUR) BETWEEN 0 AND 12
+          AND airline_iata IN ('UA','LH')
+        LIMIT 5
+      )
+      SELECT f.*, h.hotel_name, h.stars, l.amenities_flags
+      FROM candidate_flights AS f
+      LEFT JOIN {table_ref('hotels')} AS h
+        ON f.arrival_iata = h.airport_iata
+      LEFT JOIN {table_ref('lounges')} AS l
+        ON f.arrival_iata = l.airport_code
+    """
+    job = CLIENT.query(
+        q,
+        job_config=bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("dep","STRING",dep)
+            ]
+        )
+    )
+    opts = [dict(row) for row in job.result()]
+    return opts
