@@ -1,4 +1,6 @@
-import sqlite3, pandas as pd, glob
+import sqlite3
+import pandas as pd
+import glob
 
 DB = "acdc.db"
 conn = sqlite3.connect(DB)
