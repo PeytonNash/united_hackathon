@@ -149,3 +149,6 @@ webencodings==0.5.1
 websocket-client==1.8.0
 websockets==15.0.1
 widgetsnbextension==4.0.14
+langgraph==0.1.0
+langchain==0.1.0
+google-cloud-aiplatform==1.0.0
