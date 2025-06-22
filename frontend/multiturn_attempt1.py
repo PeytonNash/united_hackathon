@@ -4,7 +4,7 @@ import json
 import os
 
 # set page configuration 
-st.set_page_config(page_title="United Airlines Customer Service Agent", page_icon="🧵", layout="centered")
+st.set_page_config(page_title="United Airlines Customer Service Agent", page_icon="✈️", layout="centered")
 
 # united colours UI theme applied here via CSS injection
 st.markdown("""
