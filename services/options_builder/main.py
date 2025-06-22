@@ -9,8 +9,10 @@ from google.cloud import bigquery
 
 app = FastAPI()
 
+
 class Ctx(BaseModel):
     flight_ctx: dict
+
 
 @app.post("/flight_options")
 def build_options(ctx: Ctx):
@@ -40,6 +42,7 @@ def build_options(ctx: Ctx):
     opts = [dict(row) for row in job.result()]
     return opts
 
+
 @app.post("/lounge_options")
 def build_options(ctx: Ctx):
     dep = ctx.flight_ctx["departure_iata"]
@@ -53,12 +56,13 @@ def build_options(ctx: Ctx):
         q,
         job_config=bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("dep","STRING",dep)
+                bigquery.ScalarQueryParameter("dep", "STRING", dep)
             ]
         )
     )
     opts = [dict(row) for row in job.result()]
     return opts
+
 
 @app.post("/hotel_options")
 def build_options(ctx: Ctx):
@@ -72,7 +76,7 @@ def build_options(ctx: Ctx):
         q,
         job_config=bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("dep","STRING",dep)
+                bigquery.ScalarQueryParameter("dep", "STRING", dep)
             ]
         )
     )
