@@ -28,4 +28,5 @@ def explain(ctx: Context):
     # attach first doc if weather
     if code in ['WO', 'WT', 'WR'] and ctx.docs:
         assets.append(ctx.docs[0])
+
     return {"explanation": text, "assets": assets}

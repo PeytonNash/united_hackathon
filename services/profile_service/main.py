@@ -22,6 +22,7 @@ def get_profile(customer_id: str):
     if not rec:
         return {}
     profile = rec[0]
+
     # compute priority on the fly
     tier = profile.get("tier_score", 0)
     tags = profile.get("tags","").split(",")
