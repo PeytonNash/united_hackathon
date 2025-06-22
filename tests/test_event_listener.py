@@ -1,4 +1,8 @@
 from fastapi.testclient import TestClient
+import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
 import services.event_listener.main as el
 import pytest
 
@@ -22,7 +26,7 @@ def client(monkeypatch):
 
 def test_forward_event(client):
     cli,  called = client
-    resp = cli.post("/events",  json={"flight_id":"UA100", "foo":"bar"})
+    resp = cli.post("/events",  json={"flight_id":"UA384", "foo":"bar"})
     assert resp.status_code == 200
-    assert called['url'].endswith("/context/UA100")
+    assert called['url'].endswith("/context/UA384")
     assert called['json']['foo'] == "bar"

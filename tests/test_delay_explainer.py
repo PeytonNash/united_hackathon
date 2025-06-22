@@ -12,7 +12,7 @@ def client():
     return TestClient(de.app)
 
 
-def test_explain_mechanical():
+def test_explain_mechanical(client):
     ctx = {"flight_ctx": {"delay_code": "FC", "departur_iata": "SFO"}, "docs": ["foo"]}
     resp = client.post("/delay_explainer", json=ctx)
 
