@@ -47,3 +47,6 @@ def test_handle_disruption():
     assert "options" in result
     assert result["trace_id"] == "TRACE123"
     assert isinstance(result["options"], list)
+
+# Clarify flow, how are rules applied, does the agent wait for user to respond after giving options for sentiment analysis
+# Need to confirm cloud project and if we're using vertex

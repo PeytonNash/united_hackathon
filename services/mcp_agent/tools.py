@@ -29,11 +29,12 @@ async def apply_rules(flight_ctx: dict, profile: dict, docs: list[str] = []) -> 
     r = await client.post(ENDPOINTS["rules_policy"], json=payload)
     return r.json()
 
-@tool
-async def build_options(flight_ctx: dict) -> list:
-    """Get alternate flights/hotels/lounges given flight context"""
-    r = await client.post(ENDPOINTS["build_options"], json={"flight_ctx": flight_ctx})
-    return r.json()
+# deprecated
+# @tool
+# async def build_options(flight_ctx: dict) -> list:
+#     """Get alternate flights/hotels/lounges given flight context"""
+#     r = await client.post(ENDPOINTS["build_options"], json={"flight_ctx": flight_ctx})
+#     return r.json()
 
 @tool
 async def score_options(options: list, priority_score: float) -> list:
@@ -51,4 +52,12 @@ async def post_trace(trace_payload: dict) -> str:
 async def analyze_sentiment(text: str, priority_score: float) -> dict:
     """Analyze sentiment and compute escalation risk."""
     r = await client.post(ENDPOINTS["sentiment"], json={"user_msg": text, "priority_score": priority_score})
+    r.raise_for_status()
     return r.json()
+
+# invoke the options builder agent
+async def delegate_options_builder(flight_ctx: dict, rules_policy: dict) -> list:
+    payload = {"flight_ctx": flight_ctx, "rules_policy": rules_policy}
+    r = await client.post(ENDPOINTS["build_options_agent"], json=payload)
+    r.raise_for_status()
+    return r.json().get("options", [])
