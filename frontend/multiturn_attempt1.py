@@ -3,11 +3,10 @@ import requests
 import json
 import os
 
-# CONFIGURABLE BACKEND URL
-# change this to whatever our current backend URL is
-BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5001/api/v1/agent")
+# set page configuration 
+st.set_page_config(page_title="United Airlines Customer Service Agent", page_icon="🧵", layout="centered")
 
-# use united colours as a UI theme via CSS injection :)
+# united colours UI theme applied here via CSS injection
 st.markdown("""
     <style>
         .stApp {
@@ -50,20 +49,24 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.set_page_config(page_title="United Colours AI Agent", page_icon="🧵", layout="centered")
-st.title("United Colours Reasoning Agent")
+st.markdown("### United Airlines Customer Service Agent")
+st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/United_Airlines_Logo.svg/320px-United_Airlines_Logo.svg.png", width=150)
 
-# initialize session state for chat history (for multi-turn)
+# CONFIGURABLE BACKEND URL
+# change this to our backend URL
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5001/api/v1/agent")
+
+# initialize session state for chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# display previous conversation history sequentially
+# display previous conversation history sequentially (this is for multi-turn)
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# take chat input here
-if user_query := st.chat_input("Hi! I'm your United Assistant. Ask me anything!"):
+# chat input
+if user_query := st.chat_input("Ask me anything!"):
     # add user message to history
     st.session_state.messages.append({"role": "user", "content": user_query})
 
@@ -71,7 +74,7 @@ if user_query := st.chat_input("Hi! I'm your United Assistant. Ask me anything!"
     with st.chat_message("user"):
         st.markdown(user_query)
 
-    # call backend with full message history (multi-turn enabled ideally...)
+    # call backend with full message history
     payload = {
         "messages": st.session_state.messages
     }
