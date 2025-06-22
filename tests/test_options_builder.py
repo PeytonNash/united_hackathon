@@ -8,10 +8,26 @@ import services.options_builder.main as ob
 client = TestClient(ob.app)
 
 
-def test_build_options():
-    ctx = {"flight_ctx": {"departure_iata": "SFO"}}
-    resp = client.post("/build_options", json=ctx)
+def test_flight_options():
+    ctx = {"flight_ctx": {"departure_iata": "SFO", 'arrival_iata':'PDX'}}
+    resp = client.post("/flight_options", json=ctx)
     opts = resp.json()
     assert isinstance(opts, list) and len(opts) <= 5
     for o in opts:
-        assert "flight" in o and "hotel" in o and "lounge" in o
+        assert "flight_iata" in o
+
+def test_lounge_options():
+    ctx = {"flight_ctx": {"departure_iata": "SFO", 'arrival_iata':'PDX'}}
+    resp = client.post("/lounge_options", json=ctx)
+    opts = resp.json()
+    assert isinstance(opts, list)
+    for o in opts:
+        assert "type" in o
+
+def test_hotel_options():
+    ctx = {"flight_ctx": {"departure_iata": "SFO", 'arrival_iata':'PDX'}}
+    resp = client.post("/hotel_options", json=ctx)
+    opts = resp.json()
+    assert isinstance(opts, list)
+    for o in opts:
+        assert "hotel_name" in o
