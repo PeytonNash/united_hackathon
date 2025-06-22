@@ -1,11 +1,15 @@
 from fastapi.testclient import TestClient
+import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
 import services.options_builder.main as ob
 
 client = TestClient(ob.app)
 
 
 def test_build_options():
-    ctx = {"flight_ctx": {"dep": "SFO"}}
+    ctx = {"flight_ctx": {"departure_iata": "SFO"}}
     resp = client.post("/build_options", json=ctx)
     opts = resp.json()
     assert isinstance(opts, list) and len(opts) <= 5

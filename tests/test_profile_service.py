@@ -1,4 +1,8 @@
 from fastapi.testclient import TestClient
+import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
 import services.profile_service.main as ps
 
 client = TestClient(ps.app)

@@ -7,12 +7,12 @@ app = FastAPI()
 @app.get("/profile/{customer_id}")
 def get_profile(customer_id: str):
     q = f"""
-      SELECT c.*, b.flight.iata AS last_flight, COUNT(b.customer_id) AS total_bookings
+      SELECT c.*, b.flight_iata AS last_flight, COUNT(b.customer_id) AS total_bookings
       FROM {table_ref('customers')} AS c
       LEFT JOIN {table_ref('bookings')} AS b
         ON c.customer_id = b.customer_id
       WHERE c.customer_id = @customer_id
-      GROUP BY c.customer_id, c.tier_score, c.tags, c.past_CSAT, b.flight.iata
+      GROUP BY c.customer_id, c.tier_score, c.tags, c.past_CSAT, b.flight_iata
     """
     job = CLIENT.query(
         q,

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 app = FastAPI()
 
 load_dotenv()
+
 CTX_URL = os.getenv("CTX_AGG_URL")
 
 
