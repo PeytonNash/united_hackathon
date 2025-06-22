@@ -4,7 +4,7 @@ import openai
 import os
 
 app = FastAPI()
-openai.api_key = os.getenv("OPENAI_KEY")
+openai.api_key = os.getenv("OPENAI_KEY") ### NEED TO UPDATE FOR GEMINI
 
 
 class Req(BaseModel): 

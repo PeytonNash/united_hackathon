@@ -26,6 +26,6 @@ def explain(ctx: Context):
     text = tpl.format(**ctx.flight_ctx)
     assets = []
     # attach first doc if weather
-    if code == "WX" and ctx.docs:
+    if code in ['WO', 'WT', 'WR'] and ctx.docs:
         assets.append(ctx.docs[0])
     return {"explanation": text, "assets": assets}

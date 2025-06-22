@@ -3,10 +3,14 @@ from pydantic import BaseModel
 import openai
 import math
 import os
+from dotenv import load_dotenv
 import httpx
 
 app = FastAPI()
-openai.api_key = os.getenv("OPENAI_KEY")
+
+load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_KEY") ##### NEEDS TO BE UPDATED FOR GEMINI
 SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
 
 

@@ -1,9 +1,12 @@
 from fastapi import FastAPI, Request
 import httpx
 import os
+from dotenv import load_dotenv 
 
 app = FastAPI()
-CTX_URL = os.getenv("CTX_AGG_URL", "http://localhost:8001/context/")
+
+load_dotenv()
+CTX_URL = os.getenv("CTX_AGG_URL")
 
 
 @app.post("/events")
