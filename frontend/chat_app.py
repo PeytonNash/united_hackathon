@@ -216,11 +216,22 @@ if user_query := st.chat_input("Type your message here... (e.g., 'I need to chan
         </div>
     """, unsafe_allow_html=True)
 
+    # Initialize result to avoid scope issues
+    result = {"response": "No response from agent."}
+
     # Handle the first prompt (disruption workflow)
     if not st.session_state.workflow_started:
         st.session_state.flight_id = st.text_input("Enter Flight ID", "")  # Replace with actual flight ID input
         st.session_state.pax_id = st.text_input("Enter Passenger ID", "")
-        result = handle_disruption(st.session_state.flight_id, st.session_state.pax_id)
+        
+        # Add a button to confirm the input
+        if st.button("Start Disruption Workflow"):
+            if st.session_state.flight_id and st.session_state.pax_id:
+                # Call the disruption workflow only if both fields are filled
+                result = handle_disruption(st.session_state.flight_id, st.session_state.pax_id)
+                st.session_state.workflow_started = True  # Mark workflow as started
+            else:
+                st.error("Please enter both Flight ID and Passenger ID.")
         st.session_state.workflow_started = True  # Mark workflow as started
     else:
         # Handle follow-up prompts
