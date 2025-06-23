@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 BASE_URL = "http://localhost:8000"
 
 ENDPOINTS = {
@@ -11,5 +16,5 @@ ENDPOINTS = {
     "trace": "/trace",
 }
 
-GCP_PROJECT_ID = "gcp-project"
+GCP_PROJECT_ID = os.getenv("BQ_PROJECT")
 VERTEX_MODEL = "gemini-1.5-flash"
