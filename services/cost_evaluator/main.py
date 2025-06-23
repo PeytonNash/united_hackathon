@@ -2,11 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import google.generativeai as genai
 import os
+from dotenv import load_dotenv
 
 app = FastAPI()
 
 # Authenticate with Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Set GEMINI_API_KEY in your environment
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Gemini model instance
 model = genai.GenerativeModel("gemini-2.5-pro")
