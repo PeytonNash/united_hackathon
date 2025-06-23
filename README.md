@@ -1,24 +1,30 @@
-# united_hackathon
-United Airlines/ADSP hackathon collaboration  ✈️
+# United Airlines Hackathon: ACDC System
+### Agentic Complimentary Disruption Concierge (ACDC)
+A collaborative project developed during the United Airlines / ADSP Hackathon ✈️
 
 ## Overview
 
-The Agentic Complimentary Disruption Concierge (ACDC) system automates passenger assistance during flight disruptions. It integrates structured and unstructured data, personalized recovery options, and provides transparent auditing of decisions.
+The ACDC system automates passenger assistance during flight disruptions by combining structured and unstructured data to generate personalised recovery options. It provides:
+* Real-time disruption monitoring
+* Automated decision-making based on policies and profiles
+* Transparent decision traceability
+* Scalable architecture for integration into airline operations
 
 ## Project Architecture
 
-The system consists of multiple independent microservices that communicate via REST APIs and share data through a central SQLite database (`acdc.db`).
+The solution is built as a modular microservice system, communicating via REST APIs and sharing state through a central SQLite database (`acdc.db`).
 
-- Event Listener
-- Context Aggregator
-- Delay Explainer
-- Rules and Policy Engine
-- Profile Service
-- Options Builder
-- Cost Evaluator
-- Sentiment and Escalation Manager
-- Decision Trace API
-- Streamlit Demo UI
+Core components include:
+* **Event Listener** – Monitors flight event streams
+* **Context Aggregator** – Gathers passenger and disruption context
+* **Delay Explainer** – Generates human-readable explanations
+* **Rules and Policy Engine** – Applies recovery policies and business rules
+* **Profile Service** – Retrieves passenger profiles and preferences
+* **Options Builder** – Generates alternative recovery options
+* **Cost Evaluator** – Assesses financial impact of recovery options
+* **Sentiment + Escalation Manager** – Incorporates customer sentiment into decision-making
+* **Decision Trace API** – Logs and audits decisions
+* **Streamlit UI** – Interactive interface for demo and testing
 
 ## Local Development Setup
 
