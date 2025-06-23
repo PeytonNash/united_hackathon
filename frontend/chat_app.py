@@ -30,7 +30,6 @@ API_MODE = os.getenv("API_MODE", "openai")
 #     client = OpenAI(api_key=OPENAI_API_KEY)
 
 
-
 # Initialize session state for chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -46,6 +45,7 @@ if "flight_id" not in st.session_state:
 if "pax_id" not in st.session_state:
     st.session_state.pax_id = None
 
+
 # Function to handle disruption workflow
 def handle_disruption(flight_id, pax_id):
     payload = {"flight_id": flight_id, "pax_id": pax_id}
@@ -55,7 +55,8 @@ def handle_disruption(flight_id, pax_id):
         return response.json()
     except Exception as e:
         return {"error": str(e)}
-    
+
+
 # Function to handle follow-up prompts
 def handle_followup(flight_id, pax_id, user_msg):
     payload = {"flight_id": flight_id, "pax_id": pax_id, "user_msg": user_msg}
