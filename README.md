@@ -1,7 +1,7 @@
 # united_hackathon
 United Airlines/ADSP hackathon collaboration  ✈️
 
-## Overview -- AI written slop for now
+## Overview
 
 The Agentic Complimentary Disruption Concierge (ACDC) system automates passenger assistance during flight disruptions. It integrates structured and unstructured data, personalized recovery options, and provides transparent auditing of decisions.
 
