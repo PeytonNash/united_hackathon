@@ -32,7 +32,6 @@ async def sentiment(req: Req):
 
     response = model.generate_content(prompt)
     
-    # Extract JSON from the response text
     import json
     try:
         neg_data = json.loads(response.text)
