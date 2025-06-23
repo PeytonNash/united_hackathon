@@ -16,8 +16,9 @@ def test_get_context_returns_flight_and_docs(client):
     resp = client.get("/context/UA384")
     assert resp.status_code == 200
     body = resp.json()
-    assert body["flight_ctx"]["flight_iata"] == "UA384"
-    #assert "docs" in body and isinstance(body["docs"], list)
+    assert body["flight_ctx"]["flight_iata"] == "UA384", 'Flight fail'
+    assert "docs" in body and isinstance(body["docs"], list), 'Docs fail'
 
-    # docs_fts contains §259, so it should appear
-    #assert any("259" in d for d in body["docs"])a
+    # docs_fts contains United contract of carriage, etc., so it should appear
+    assert any("United Club Terms and Conditions Important:" in d for d in body["docs"]), 'Find substring fail'
+    print(body['docs'])
