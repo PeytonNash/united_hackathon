@@ -25,7 +25,9 @@ def explain(ctx: Context):
     tpl  = CODE_MAP.get(code, "Delay cause unavailable.")
     text = tpl.format(**ctx.flight_ctx)
     assets = []
+
     # attach first doc if weather
     if code in ['WO', 'WT', 'WR'] and ctx.docs:
         assets.append(ctx.docs[0])
+
     return {"explanation": text, "assets": assets}

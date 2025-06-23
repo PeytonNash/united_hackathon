@@ -1,28 +1,25 @@
 from fastapi.testclient import TestClient
+import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
 import services.sentiment_escalation.main as se
 import pytest
+import json
 
 @pytest.fixture(autouse=True)
 def patch_deps(monkeypatch):
-    # Stub OpenAI ChatCompletion
-    class DummyChat:
-        @staticmethod
-        def create(**kwargs):
-            return type("ChatResponse", (), {
-                "choices": [
-                    type("Choice", (), {
-                        "message": type("Message", (), {
-                            "function_call": type("FunctionCall", (), {
-                                "arguments": {"neg": 0.9}
-                            })()
-                        })()
-                    })()
-                ]
-            })()
+    # Stub Gemini GenerativeModel and generate_content
+    class DummyResponse:
+        @property
+        def text(self):
+            return json.dumps({"neg": 0.9})
 
-    monkeypatch.setattr(se, "openai", type("OpenAIStub", (), {
-        "ChatCompletion": DummyChat
-    }))
+    class DummyModel:
+        def generate_content(self, prompt):
+            return DummyResponse()
+
+    monkeypatch.setattr(se, "model", DummyModel())
 
     # Stub HTTPX POST call
     async def fake_post(url, json):
@@ -39,8 +36,7 @@ client = TestClient(se.app)
 
 
 def test_sentiment_escalation_high(): 
-    resp = client.post("/sentiment",  json={"user_msg": "bad", "priority_score": 0.9})
+    resp = client.post("/sentiment", json={"user_msg": "bad", "priority_score": 0.9})
     data = resp.json()
     assert data["risk"] > 0.7
     assert data["channel"] == "#premier_desk"
-    
