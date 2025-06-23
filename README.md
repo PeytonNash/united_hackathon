@@ -12,7 +12,7 @@ The ACDC system automates passenger assistance during flight disruptions by comb
 
 ## ✈️ Project Architecture
 
-The solution is built as a modular microservice system, communicating via REST APIs and sharing state through a central SQLite database (`acdc.db`).
+The system consists of multiple independent microservices that communicate via REST APIs and share data through a central SQLite database (`acdc.db`).
 
 Core components include:
 * **Event Listener** – Monitors flight event streams
