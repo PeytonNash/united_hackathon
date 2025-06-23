@@ -2,6 +2,8 @@
 ### Agentic Complimentary Disruption Concierge (ACDC)
 A collaborative project developed during the United Airlines / ADSP Hackathon 
 
+## [✈️ Demo Video](https://uchicago.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=85375ab5-0e76-41ef-b4c2-b305009413b0)
+
 ## ✈️ Overview
 
 The ACDC system automates passenger assistance during flight disruptions by combining structured and unstructured data to generate personalised recovery options. It provides:
