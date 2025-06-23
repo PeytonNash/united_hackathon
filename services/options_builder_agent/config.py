@@ -12,4 +12,4 @@ ENDPOINTS = {
 }
 
 GCP_PROJECT_ID = os.getenv("BQ_PROJECT")
-VERTEX_MODEL = "gemini-1.5-flash"
+VERTEX_MODEL = "gemini-2.5-pro"

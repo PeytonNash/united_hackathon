@@ -38,6 +38,9 @@ if "messages" not in st.session_state:
 if "workflow_started" not in st.session_state:
     st.session_state.workflow_started = False  # Tracks if disruption workflow has been triggered
 
+if "button_clicked" not in st.session_state:
+    st.session_state.button_clicked = False
+
 if "flight_id" not in st.session_state:
     st.session_state.flight_id = None
 if "pax_id" not in st.session_state:
@@ -221,18 +224,24 @@ if user_query := st.chat_input("Type your message here... (e.g., 'I need to chan
 
     # Handle the first prompt (disruption workflow)
     if not st.session_state.workflow_started:
-        st.session_state.flight_id = st.text_input("Enter Flight ID", "")  # Replace with actual flight ID input
-        st.session_state.pax_id = st.text_input("Enter Passenger ID", "")
-        
-        # Add a button to confirm the input
-        if st.button("Start Disruption Workflow"):
-            if st.session_state.flight_id and st.session_state.pax_id:
-                # Call the disruption workflow only if both fields are filled
-                result = handle_disruption(st.session_state.flight_id, st.session_state.pax_id)
-                st.session_state.workflow_started = True  # Mark workflow as started
-            else:
-                st.error("Please enter both Flight ID and Passenger ID.")
-        st.session_state.workflow_started = True  # Mark workflow as started
+        with st.form("disruption_form"):
+            # Group inputs and button inside the form
+            flight_id = st.text_input("Enter Flight ID", "")
+            pax_id = st.text_input("Enter Passenger ID", "")
+            submit_button = st.form_submit_button("Start Disruption Workflow")
+
+            # Validate inputs and proceed only if the form is submitted
+            if submit_button:
+                if flight_id.strip() and pax_id.strip():  # Validate that both fields are filled
+                    # Update session state only when both fields are valid
+                    st.session_state.flight_id = flight_id
+                    st.session_state.pax_id = pax_id
+                    
+                    # Call the disruption workflow
+                    result = handle_disruption(st.session_state.flight_id, st.session_state.pax_id)
+                    st.session_state.workflow_started = True  # Mark workflow as started
+                else:
+                    st.error("Please enter both Flight ID and Passenger ID.")
     else:
         # Handle follow-up prompts
         result = handle_followup(st.session_state.flight_id, st.session_state.pax_id, user_query)

@@ -5,8 +5,9 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.chains import LLMChain
+from langchain.schema import RunnableSequence
 
+# Define the prompt
 prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(
         "You are an options builder agent. You suggest flights, hotels, and lounges to customers."
@@ -14,6 +15,7 @@ prompt = ChatPromptTemplate.from_messages([
     HumanMessagePromptTemplate.from_template("{user_query}"),
 ])
 
+# Define the LLM
 llm = ChatVertexAI(
     model=VERTEX_MODEL,
     project=GCP_PROJECT_ID,
@@ -21,4 +23,5 @@ llm = ChatVertexAI(
     max_output_tokens=1024,
 )
 
-chain = LLMChain(llm=llm, prompt=prompt)
+# Create a RunnableSequence
+chain = RunnableSequence([prompt, llm])

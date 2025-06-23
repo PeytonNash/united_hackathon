@@ -5,7 +5,7 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.chains import LLMChain
+from langchain.schema import RunnableSequence
 
 prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(
@@ -21,4 +21,5 @@ llm = ChatVertexAI(
     max_output_tokens=1024,
 )
 
-chain = LLMChain(llm=llm, prompt=prompt)
+# Create a RunnableSequence
+chain = RunnableSequence([prompt, llm])

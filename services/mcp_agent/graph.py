@@ -7,7 +7,7 @@ def dispatch_tool(output):
     return output.get("tool_name")
 
 def build_agent_graph():
-    builder = StateGraph()
+    builder = StateGraph(state_schema={"user_query": str})
 
     builder.set_entry_point("context")
     builder.set_entry_point("think")
