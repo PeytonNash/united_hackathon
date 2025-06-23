@@ -12,7 +12,7 @@ The ACDC system automates passenger assistance during flight disruptions by comb
 * Transparent decision traceability
 * Scalable architecture for integration into airline operations
 
-## ✈️ Project Architecture
+## [✈️ Project Architecture](https://github.com/PeytonNash/united_hackathon/blob/main/Final%20Presentation.pdf)
 
 The system consists of multiple independent microservices that communicate via REST APIs and share data through a central SQLite database (`acdc.db`).
 
