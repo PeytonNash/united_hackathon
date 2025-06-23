@@ -1,8 +1,8 @@
 # United Airlines Hackathon: ACDC System
 ### Agentic Complimentary Disruption Concierge (ACDC)
-A collaborative project developed during the United Airlines / ADSP Hackathon ✈️
+A collaborative project developed during the United Airlines / ADSP Hackathon 
 
-## Overview
+## ✈️ Overview
 
 The ACDC system automates passenger assistance during flight disruptions by combining structured and unstructured data to generate personalised recovery options. It provides:
 * Real-time disruption monitoring
@@ -10,7 +10,7 @@ The ACDC system automates passenger assistance during flight disruptions by comb
 * Transparent decision traceability
 * Scalable architecture for integration into airline operations
 
-## Project Architecture
+## ✈️ Project Architecture
 
 The solution is built as a modular microservice system, communicating via REST APIs and sharing state through a central SQLite database (`acdc.db`).
 
@@ -26,7 +26,7 @@ Core components include:
 * **Decision Trace API** – Logs and audits decisions
 * **Streamlit UI** – Interactive interface for demo and testing
 
-## Local Development Setup
+## ✈️ Local Development Setup
 
 1. Clone repository:
 
@@ -88,7 +88,7 @@ uvicorn services/trace_api/main:app --port 8008
 streamlit run services/ui_streamlit/app.py –server.port 8501
 ```
 
-## Running Tests
+## ✈️ Running Tests
 
 Run all unit tests:
 
