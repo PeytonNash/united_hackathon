@@ -17,7 +17,7 @@ st.set_page_config(
 
 # CONFIGURATION OPTIONS
 # Option 1: Use OpenAI GPT-4
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
 
 # Option 2: Use your existing backend
 BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5001/api/v1/agent")
@@ -26,12 +26,42 @@ BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:5001/api/v1/age
 API_MODE = os.getenv("API_MODE", "openai")
 
 # Initialize OpenAI client if using OpenAI
-if API_MODE == "openai":
-    client = OpenAI(api_key=OPENAI_API_KEY)
+# if API_MODE == "openai":
+#     client = OpenAI(api_key=OPENAI_API_KEY)
+
+
 
 # Initialize session state for chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "workflow_started" not in st.session_state:
+    st.session_state.workflow_started = False  # Tracks if disruption workflow has been triggered
+
+if "flight_id" not in st.session_state:
+    st.session_state.flight_id = None
+if "pax_id" not in st.session_state:
+    st.session_state.pax_id = None
+
+# Function to handle disruption workflow
+def handle_disruption(flight_id, pax_id):
+    payload = {"flight_id": flight_id, "pax_id": pax_id}
+    try:
+        response = requests.post(f"{BACKEND_API_URL}/disruption", json=payload)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+# Function to handle follow-up prompts
+def handle_followup(flight_id, pax_id, user_msg):
+    payload = {"flight_id": flight_id, "pax_id": pax_id, "user_msg": user_msg}
+    try:
+        response = requests.post(f"{BACKEND_API_URL}/followup", json=payload)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        return {"error": str(e)}
 
 # Enhanced styling with background image
 st.markdown("""
@@ -186,12 +216,25 @@ if user_query := st.chat_input("Type your message here... (e.g., 'I need to chan
         </div>
     """, unsafe_allow_html=True)
 
+    # Handle the first prompt (disruption workflow)
+    if not st.session_state.workflow_started:
+        st.session_state.flight_id = st.text_input("Enter Flight ID", "")  # Replace with actual flight ID input
+        st.session_state.pax_id = st.text_input("Enter Passenger ID", "")
+        result = handle_disruption(st.session_state.flight_id, st.session_state.pax_id)
+        st.session_state.workflow_started = True  # Mark workflow as started
+    else:
+        # Handle follow-up prompts
+        result = handle_followup(st.session_state.flight_id, st.session_state.pax_id, user_query)
+
+
     # Show typing indicator
     with st.spinner("Agent is typing..."):
-        assistant_reply = get_ai_response(st.session_state.messages)
+        # assistant_reply = get_ai_response(st.session_state.messages)
+        assistant_reply = result.get("response", "No response from agent.")
 
     # Add assistant reply to history
-    st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+    # st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+    st.session_state.messages.append({"role": "assistant", "content": result.get("response", "No response")})
 
     # Display assistant reply
     st.markdown(f"""
@@ -237,3 +280,6 @@ with st.sidebar:
     if st.button("Clear Chat History"):
         st.session_state.messages = []
         st.rerun()
+    
+    # UA5392
+    # CUST00000
